@@ -6,6 +6,12 @@ import json
 import keyboard as kb
 from pynput import mouse, keyboard
 from typing import Any, Literal, Callable, Union
+from enum import Enum
+
+
+class ActionType(Enum):
+    up: str = "up"
+    down: str = "down"
 
 
 class HoverButton(tk.Button):
@@ -143,7 +149,7 @@ class RecorderApp:
             return
         print(self.recorded_actions[-1])
 
-    def add_key_press(self, key, action: Union["down", "up"]):
+    def add_key_press(self, key, action: ActionType.up | ActionType.down):
         current_time = time.time()
         self.recorded_actions.append(
             {
