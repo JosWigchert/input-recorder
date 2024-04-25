@@ -3,23 +3,54 @@ from tkinter import filedialog as fd
 import time
 import threading
 import json
+import keyboard as kb
 from pynput import mouse, keyboard
+from typing import Any, Literal, Callable, Union
+
+
+class HoverButton(tk.Button):
+    def __init__(self, master, **kw):
+        tk.Button.__init__(self, master=master, **kw)
+        self.defaultBackground = self["bg"]
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+
+    def configure(self, **kw):
+        self.defaultBackground = self["bg"]
+        tk.Button.configure(self, **kw)
+
+    def on_enter(self, e):
+        self.configure(bg=self["activebackground"])
+
+    def on_leave(self, e):
+        self.configure(bg=self.defaultBackground)
 
 
 class RecorderApp:
     def __init__(self, master):
         self.master = master
+        self.master.configure(bg="#000000")
+
         self.master.title("Recorder App")
 
-        self.record_button = tk.Button(
+        self.record_button = HoverButton(
             master, text="Record", command=self.start_recording
         )
-        self.record_button.pack()
+        self.record_button.pack(fill=tk.BOTH)
+        self.record_button.configure(
+            bg="#333333", border=0, fg="#bbbbbb", activebackground="#444444"
+        )
 
-        self.run_button = tk.Button(
+        self.run_button = HoverButton(
             master, text="Run", command=self.run_recorded_actions
         )
-        self.run_button.pack()
+        self.run_button.pack(
+            fill=tk.BOTH,
+            side=tk.BOTTOM,
+        )
+        self.run_button.configure(
+            bg="#333333", border=0, fg="#bbbbbb", activebackground="#444444"
+        )
 
         self.start_time = time.time()
         self.ctlr_pressed = False
@@ -27,6 +58,9 @@ class RecorderApp:
         self.mouse_listener = None
         self.keyboard_listener = None
         self.recorded_actions = []
+        self.last_file = None
+
+        kb.add_hotkey("ctrl+space", lambda: self.run_recorded_actions(self.last_file))
 
     def start_recording(self):
         self.start_time = time.time()
@@ -109,7 +143,7 @@ class RecorderApp:
             return
         print(self.recorded_actions[-1])
 
-    def add_key_press(self, key, action: ["down", "up"]):
+    def add_key_press(self, key, action: Union["down", "up"]):
         current_time = time.time()
         self.recorded_actions.append(
             {
@@ -123,11 +157,24 @@ class RecorderApp:
         )
         self.start_time = current_time
 
-    def run_recorded_actions(self):
-        filename = fd.askopenfilename(
-            defaultextension=".json",
-            filetypes=(("JSON files", "*.json"), ("All files", "*.*")),
-        )
+    def run_recorded_actions(self, filename=None):
+        print(f"Debug {filename}")
+        if not filename:
+            filename = fd.askopenfilename(
+                defaultextension=".json",
+                filetypes=(("JSON files", "*.json"), ("All files", "*.*")),
+            )
+            self.last_file = filename
+
+            print("Running commands in ", end="")
+            if filename:
+                print("3 ", end="")
+                time.sleep(1)
+                print("2 ", end="")
+                time.sleep(1)
+                print("1")
+                time.sleep(1)
+
         if not filename:
             return
 
@@ -140,14 +187,7 @@ class RecorderApp:
             keyboard_controller = keyboard.Controller()
             mouse_controller = mouse.Controller()
 
-            print("Running commands in ", end="")
-            print("3 ", end="")
-            time.sleep(1)
-            print("2 ", end="")
-            time.sleep(1)
-            print("1 ", end="")
-            time.sleep(1)
-            for i in range(20):
+            for i in range(1):
                 for action in loaded_actions:
                     time.sleep(action["time"])
                     data = action["data"]
@@ -183,5 +223,6 @@ class RecorderApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.geometry("200x40")
     app = RecorderApp(root)
     root.mainloop()
