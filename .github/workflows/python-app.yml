@@ -41,15 +41,9 @@ jobs:
         pytest
     - name: "Build executable for ${{ matrix.os }}"
       run: |
-          python setup.py build -b dist/${{ matrix.os }}
-          zip -r dist/${{ matrix.os }}.zip dist/${{ matrix.os }}
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
+          python setup.py build -b build/${{ matrix.os }}
+    - name: Release
+      uses: softprops/action-gh-release@v2
       with:
-        name: build-${{ matrix.os }}
-        path: build/*.zip
-    - name: Upload installer artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: executables-${{ matrix.os }}
-        path: dist/
+        files: |
+          build/${{ matrix.os }}
