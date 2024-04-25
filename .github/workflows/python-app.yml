@@ -42,7 +42,6 @@ jobs:
     - name: "Build executable for ${{ matrix.os }}"
       run: |
           python setup.py build
-      if: matrix.os == "windows-latest"
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
