@@ -41,12 +41,13 @@ jobs:
         pytest
     - name: "Build executable for ${{ matrix.os }}"
       run: |
-          python setup.py build
+          python setup.py build --target-dir dist/${{ matrix.os }}
+          zip -r dist/${{ matrix.os }}.zip dist/${{ matrix.os }}
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: executables-${{ matrix.os }}
-        path: build/
+        name: build-${{ matrix.os }}
+        path: build/*.zip
     - name: Upload installer artifacts
       uses: actions/upload-artifact@v2
       with:
