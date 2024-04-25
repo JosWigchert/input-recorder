@@ -131,9 +131,9 @@ class RecorderApp:
             self.stop_recording()
             return
         elif hasattr(key, "value") and hasattr(key.value, "vk"):
-            self.add_key_press(key.value.vk, "down")
+            self.add_key_press(key.value.vk, ActionType.down)
         elif hasattr(key, "vk"):
-            self.add_key_press(key.vk, "down")
+            self.add_key_press(key.vk, ActionType.down)
         else:
             print("Unknown keypress: ", key)
             return
@@ -141,15 +141,15 @@ class RecorderApp:
 
     def on_key_release(self, key):
         if hasattr(key, "value") and hasattr(key.value, "vk"):
-            self.add_key_press(key.value.vk, "up")
+            self.add_key_press(key.value.vk, ActionType.up)
         elif hasattr(key, "vk"):
-            self.add_key_press(key.vk, "up")
+            self.add_key_press(key.vk, ActionType.up)
         else:
             print("Unknown keypress: ", key)
             return
         print(self.recorded_actions[-1])
 
-    def add_key_press(self, key, action: ActionType.up | ActionType.down):
+    def add_key_press(self, key, action: ActionType):
         current_time = time.time()
         self.recorded_actions.append(
             {
