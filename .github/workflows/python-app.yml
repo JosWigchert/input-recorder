@@ -39,15 +39,10 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
-    - name: Build executable
+    - name: "Build executable for ${{ matrix.os }}"
       run: |
-        if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          python setup.py --target-dir dist/win
-        elif [ "${{ matrix.os }}" = "macos-latest" ]; then
-          python setup.py --target-dir dist/macos --include-modules=tkinter
-        else
-          python setup.py --target-dir dist/linux --include-modules=tkinter
-        fi
+          python setup.py build
+      if: matrix.os == "windows-latest"
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
