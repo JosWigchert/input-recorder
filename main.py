@@ -111,10 +111,12 @@ class RecorderApp:
     def on_click(self, x, y, button, pressed):
         if hasattr(button, "name"):
             current_time = time.time()
+            delta_time = current_time - self.start_time
+            # delta_time = 0.05
             self.recorded_actions.append(
                 {
                     "device": "mouse",
-                    "time": current_time - self.start_time,
+                    "time": delta_time,
                     "data": {
                         "button": button.name,
                         "pressed": pressed,
@@ -151,20 +153,35 @@ class RecorderApp:
 
     def add_key_press(self, key, action: ActionType):
         current_time = time.time()
+        delta_time = current_time - self.start_time
+        delta_time = 0.05
         self.recorded_actions.append(
             {
                 "device": "keyboard",
-                "time": current_time - self.start_time,
+                "time": delta_time,
                 "data": {
                     "key": key,
-                    "action": action,
+                    "name": self.vk_to_key_name(key),
+                    "action": action.value,
                 },
             }
         )
         self.start_time = current_time
 
+    def vk_to_key_name(self, vk_code):
+        """
+        Convert a Virtual Key (VK) code to its key name using the keyboard library.
+        """
+
+        SPECIAL_KEYS = {160: "shift", 162: "ctrl", 9: "tab", 20: "caps"}
+        if vk_code in SPECIAL_KEYS:
+            return SPECIAL_KEYS[vk_code]
+
+        return chr(vk_code)
+
     def run_recorded_actions(self, filename=None):
         print(f"Debug {filename}")
+
         if not filename:
             filename = fd.askopenfilename(
                 defaultextension=".json",
@@ -181,6 +198,15 @@ class RecorderApp:
                 print("1")
                 time.sleep(1)
 
+        print("Running commands in ", end="")
+        if filename:
+            print("3 ", end="")
+            time.sleep(1)
+            print("2 ", end="")
+            time.sleep(1)
+            print("1")
+            time.sleep(1)
+
         if not filename:
             return
 
@@ -193,7 +219,7 @@ class RecorderApp:
             keyboard_controller = keyboard.Controller()
             mouse_controller = mouse.Controller()
 
-            for i in range(1):
+            for _ in range(11):
                 for action in loaded_actions:
                     time.sleep(action["time"])
                     data = action["data"]
