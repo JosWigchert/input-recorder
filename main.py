@@ -180,7 +180,6 @@ class RecorderApp:
         return chr(vk_code)
 
     def run_recorded_actions(self, filename=None):
-        print(f"Debug {filename}")
 
         if not filename:
             filename = fd.askopenfilename(
@@ -189,26 +188,16 @@ class RecorderApp:
             )
             self.last_file = filename
 
-            print("Running commands in ", end="")
-            if filename:
-                print("3 ", end="")
-                time.sleep(1)
-                print("2 ", end="")
-                time.sleep(1)
-                print("1")
-                time.sleep(1)
-
-        print("Running commands in ", end="")
-        if filename:
-            print("3 ", end="")
-            time.sleep(1)
-            print("2 ", end="")
-            time.sleep(1)
-            print("1")
-            time.sleep(1)
-
         if not filename:
             return
+
+        print("Running commands in ", end="")
+        print("3 ", end="")
+        time.sleep(1)
+        print("2 ", end="")
+        time.sleep(1)
+        print("1")
+        time.sleep(1)
 
         with open(filename, "r") as f:
             loaded_actions = json.load(f)
